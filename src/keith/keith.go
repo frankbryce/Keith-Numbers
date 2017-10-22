@@ -4,19 +4,18 @@ package keith
 
 import (
 	"math/big"
-	"strconv"
 )
 
-func IsKeith(n int) bool {
+func IsKeith(n *big.Int) bool {
 	return IsKeithBase(n, 10)
 }
 
-func IsKeithBase(n, base int) bool {
+func IsKeithBase(n *big.Int, base int) bool {
 	if base != 10 {
 		return false
 	}
 
-	digits := strconv.Itoa(n)
+	digits := n.String()
 	nums := make([]*big.Int, len(digits))
 	for i, d := range digits {
 		nums[i] = big.NewInt(int64(d - '0'))
@@ -27,12 +26,11 @@ func IsKeithBase(n, base int) bool {
 		sum.Add(sum, nums[i])
 	}
 
-	N := big.NewInt(int64(n))
-	for sum.Cmp(N) < 0 {
+	for sum.Cmp(n) < 0 {
 		sub := nums[0]
 		nums = append(nums, big.NewInt(sum.Int64()))[1:]
 		sum.Add(sum, sum)
 		sum.Sub(sum, sub)
 	}
-	return sum.Cmp(N) == 0
+	return sum.Cmp(n) == 0
 }
