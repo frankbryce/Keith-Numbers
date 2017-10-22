@@ -3,6 +3,7 @@
 package keith
 
 import (
+	"container/list"
 	"math/big"
 )
 
@@ -16,19 +17,18 @@ func IsKeithBase(n *big.Int, base int) bool {
 	}
 
 	digits := n.String()
-	nums := make([]*big.Int, len(digits))
-	for i, d := range digits {
-		nums[i] = big.NewInt(int64(d - '0'))
-	}
-
+	nums := list.New()
 	sum := big.NewInt(0)
-	for i := 0; i < len(nums); i++ {
-		sum.Add(sum, nums[i])
+	for _, d := range digits {
+		b := big.NewInt(int64(d - '0'))
+		nums.PushBack(b)
+		sum.Add(sum, b)
 	}
 
 	for sum.Cmp(n) < 0 {
-		sub := nums[0]
-		nums = append(nums, big.NewInt(sum.Int64()))[1:]
+		sub := nums.Front().Value.(*big.Int)
+		nums.Remove(nums.Front())
+		nums.PushBack(big.NewInt(sum.Int64()))
 		sum.Add(sum, sum)
 		sum.Sub(sum, sub)
 	}
