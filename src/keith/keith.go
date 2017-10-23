@@ -8,14 +8,6 @@ import (
 )
 
 func IsKeith(n *big.Int) bool {
-	return IsKeithBase(n, 10)
-}
-
-func IsKeithBase(n *big.Int, base int) bool {
-	if base != 10 {
-		return false
-	}
-
 	digits := n.String()
 	nums := list.New()
 	sum := big.NewInt(0)
@@ -26,8 +18,7 @@ func IsKeithBase(n *big.Int, base int) bool {
 	}
 
 	for sum.Cmp(n) < 0 {
-		sub := nums.Front().Value.(*big.Int)
-		nums.Remove(nums.Front())
+		sub := nums.Remove(nums.Front()).(*big.Int)
 		nums.PushBack(big.NewInt(sum.Int64()))
 		sum.Add(sum, sum)
 		sum.Sub(sum, sub)
