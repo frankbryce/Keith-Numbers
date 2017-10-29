@@ -26,6 +26,7 @@ func bigFromString(s string) *big.Int {
 
 func TestKeithCollection(t *testing.T) {
 	tests := []testCase{
+		// 1,0,1,1,2,3,5,8,13
 		testCase{
 			n:         bigFromString("10"),
 			isKeith:   false,
@@ -34,6 +35,7 @@ func TestKeithCollection(t *testing.T) {
 			overflow:  bigFromString("3"),
 			count:     9,
 		},
+		// 1,4,5,9,14
 		testCase{
 			n:         bigFromString("14"),
 			isKeith:   true,
@@ -41,6 +43,24 @@ func TestKeithCollection(t *testing.T) {
 			underflow: bigFromString("5"),
 			overflow:  bigFromString("0"),
 			count:     5,
+		},
+		// 1,9,7,17,33,57,107,197
+		testCase{
+			n:         bigFromString("197"),
+			isKeith:   true,
+			last:      bigFromString("197"),
+			underflow: bigFromString("90"),
+			overflow:  bigFromString("0"),
+			count:     8,
+		},
+		// 1,9,8,18,35,61,114,210
+		testCase{
+			n:         bigFromString("198"),
+			isKeith:   false,
+			last:      bigFromString("210"),
+			underflow: bigFromString("84"),
+			overflow:  bigFromString("12"),
+			count:     8,
 		},
 	}
 
