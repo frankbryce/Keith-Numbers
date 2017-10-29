@@ -9,7 +9,6 @@ import (
 	"math/big"
 	"os"
 	"strings"
-	"time"
 )
 
 func main() {
@@ -19,13 +18,26 @@ func main() {
 	// generate keith sequences and collect data
 	// create dump of files for runs
 	// copy into google sheets, for analysis
+	// command line parsing
+	start := flag.Int("start", 10, "start number for keith analysis")
+	end := flag.Int("end", 10000, "end number for keith analysis")
+	inc := flag.Int("inc", 1, "amount to increment between numbers")
+	flag.Parse()
+
+	// start and increment
+	n := big.NewInt(int64(*start))
+	one := big.NewInt(int64(*inc))
 
 	// single point to change separater in csv
-	filename := fmt.Sprintf("keiths_data_%v.csv", time.Now().Format("20060102150405"))
-	sep := "\t"
+	filename := fmt.Sprintf("keiths_data_%v_%v_%v.csv", *start, *end, *inc)
 
-	// If the file doesn't exist, create it, or append to the file
-	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// if file exists, don't do this again, just return immediately
+	if _, err := os.Stat(filename); err == nil {
+		return
+	}
+
+	// If the file doesn't exist, create it
+	f, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,6 +48,8 @@ func main() {
 		}
 	}()
 
+	sep := "\t"
+
 	// write the header to the file
 	header := "num"
 	for _, c := range coll.Collections {
@@ -45,18 +59,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// command line parsing
-	start := *flag.Int("start", 10, "start number for keith analysis")
-	end := *flag.Int("end", 10000, "end number for keith analysis")
-	inc := *flag.Int("inc", 1, "amount to increment between numbers")
-
-	// start and increment
-	n := big.NewInt(int64(start))
-	one := big.NewInt(int64(inc))
-
-	// iterate
-
-	for i := start; i < end; i += inc {
+	// analysis for all specified values
+	for i := *start; i <= *end; i += *inc {
 		keith.IsKeithCollect(n)
 
 		row := n.String()
